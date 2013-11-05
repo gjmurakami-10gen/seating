@@ -1,0 +1,124 @@
+README (Gary J. Murakami <gary.murakami@10gen.com>) 2012 May 2
+
+
+Who sits where at 10gen?
+
+The data is real as of 2012 May 2, however, we need to verify it.
+
+This folder provides an interactive SVG web page for finding who sits where at 10gen.
+The main SVG file is viewable in a browser that supports SVG (e.g. Chrome, Firefox, Safari, ..., and NOT IE < IE9)
+and editable in Adobe Illustrator.
+
+seating.svg
+    To view, open this file in your browser, or serve it up via web server.
+    To edit, open this file in Adobe Illustrator.
+
+    This is the main artwork file for the floorplan, with the following additional layers:
+        person_directory
+            page item text elements for displaying person names, id page_item_*
+            page navigation buttons, id button_directory_page_*
+        person_details
+            text elements for displaying person info, id is canonicalized column name
+                from the Employee Contact Info google doc, canonicalized ids MUST match
+            skipped fields:
+                Intercall Code and PIN (PIN for call owner only)
+                Onsip Conference Bridge
+            image placeholder for person photo from 10gen Team Pictures and Bios wiki page, id person_photo
+        seats
+            rect elements for each seat, id seat_*
+            rect element for person without a NYC seat, id no_seat
+
+    For each element above, the name is also an XML element id that is specifically matched
+    to the JavaScript code for interaction.
+
+personnel.js
+    Personnel info composited from
+        '10gen Employee Contacts - Employee Contact Info.csv'
+            Employee Contact Info google doc
+            https://docs.google.com/a/10gen.com/spreadsheet/ccc?key=0AiylVnAQWESRdDZwTVpST1VKaFhrSVVUcDZHaWNrYnc#gid=0
+        10gen+Team+Pictures+and+Bios.html   10gen+Team+Pictures+and+Bios_files/*
+            10gen Team Pictures and Bios wiki page
+            https://wiki.10gen.com/display/10GEN/10gen+Team+Pictures+and+Bios
+        seat.csv
+            addendum of seat number to person mapping, currently random
+            This should be added as a column to the google doc
+
+personnel_js.js
+    JavaScript for SVG interaction in web browser.
+    SVG implementations seem quirky and painful, I have yet to figure out
+    fully-functional text elements and CSS style inserted with JavaScript.
+    Help is welcome.
+
+Rakefile
+    Tasks to make personnel.js, to build, you need Ruby installed, then:
+        bundle install
+        rake
+    If you update the google doc, wiki page, or seat.csv, you must update
+    the local copy in this directory, and reissue the 'rake' command.
+
+personnel.rb
+    Ruby program to composite personnel.js from the data sources
+    Entries from the wiki page that don't exactly match a google doc entry
+    are output as a warning to standard error.  The wiki page entry should be
+    updated to fix this mismatch.
+
+jquery-1.7.2.min.js
+    jQuery library
+
+images/Unknown-person.gif
+    default image for person photo
+
+
+Adobe Illustrator notes
+
+    Javascript files - to edit the script tags for including JavaScript
+        Window > SVG Interactivity, upper-right pull-down menu > JavaScript Files ...
+            jquery-1.7.2.min.js
+            personnel.js
+            personnel_js.js
+
+        Illustrator seems to sort them by name, so we have to rename them to order them.
+
+        Illustrator generates font-family attributes with values like "'ArialMT'" with extra single-quotes.
+        JavaScript code in personnel_js.js fixes these attribute values to "arial".
+
+Improvements desired
+    Reducing/scaling layout and imagery for best viewing in a browser.
+        (1) On a typical large/HD computer monitor, 1920x1080
+        (2) On a smaller laptop display, ex., 1440x900, 1366x768, 1280x800
+        (3) On an iPad, 1024x768
+    Usability review and improvements
+    Repository 10gen/corp/seating
+    Display Bios
+    Data improvements
+        Gdoc - 10gen Employee Contacts
+            add Nicolas
+        Wiki - 10gen Team Pictures and Bios
+            add Nicolas
+            remove Marc Bastien
+        Photos
+            Eliot Horowitz
+            Craig Wilson
+            Dan Crosta
+            Scott Hernandez
+            Jenna deBoisblanc
+            Ben Sabrin
+            Anthony Rethans
+            Erik Frieberg
+            Melia Jones
+            Lily Teng
+            Martin Cooke
+            Sabrina Knotter-Finney
+    Input selector for personnel directory, filter triggered on each keystroke.
+        There doesn't appear to be a "simple" <input> solution for SVG
+    use 10gen corp site directly in personnel_js.js
+        need seat column update
+
+10gen corp site
+    https://corp.10gen.com/
+        login with Jira credentials
+        Phonebook
+    mongo --host www-c1.10gen.cc
+        use corp
+        db.phonebook.find()
+        db.fs.files.find()

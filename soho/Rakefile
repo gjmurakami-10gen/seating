@@ -1,0 +1,48 @@
+require 'rake'
+
+GOOGLE_DOCS_10GEN_EMPLOYEE_CONTACTS = '10gen Employee Contacts - Employee Contact Info.csv'
+GOOGLE_DOCS_10GEN_EMPLOYEE_CONTACTS_URL = 'https://docs.google.com/a/10gen.com/spreadsheet/ccc?key=0AiylVnAQWESRdDZwTVpST1VKaFhrSVVUcDZHaWNrYnc#gid=0'
+WIKI_10GEN_TEAM_PICTURES_AND_BIOS = '10gen+Team+Pictures+and+Bios'
+WIKI_10GEN_TEAM_PICTURES_AND_BIOS_HTML = WIKI_10GEN_TEAM_PICTURES_AND_BIOS + '.html'
+WIKI_10GEN_TEAM_PICTURES_AND_BIOS_URL = 'https://wiki.10gen.com/display/10GEN/10gen+Team+Pictures+and+Bios'
+PERSONNEL = 'personnel.js'
+PRODUCTS = [
+    GOOGLE_DOCS_10GEN_EMPLOYEE_CONTACTS,
+    WIKI_10GEN_TEAM_PICTURES_AND_BIOS_HTML,
+    WIKI_10GEN_TEAM_PICTURES_AND_BIOS + '_files',
+]
+
+def system_x(cmd)
+  puts(cmd)
+  system(cmd)
+end
+
+task :default => [PERSONNEL]
+
+file PERSONNEL => [GOOGLE_DOCS_10GEN_EMPLOYEE_CONTACTS, WIKI_10GEN_TEAM_PICTURES_AND_BIOS_HTML, 'personnel.rb'] do |t, args|
+  cmd = "ruby personnel.rb > #{t}.tmp 2> personnel.err && mv #{t}.tmp #{t} && cat personnel.err"
+  system_x(cmd)
+end
+
+file 'personnel.rb'
+
+file GOOGLE_DOCS_10GEN_EMPLOYEE_CONTACTS do
+  print <<EOF
+    Visit #{GOOGLE_DOCS_10GEN_EMPLOYEE_CONTACTS_URL} in your browser,
+    and File > Download as > CSV (current sheet) > Save File, then move the file to this directory.
+EOF
+end
+
+file WIKI_10GEN_TEAM_PICTURES_AND_BIOS_HTML do
+  print <<EOF
+    Visit #{WIKI_10GEN_TEAM_PICTURES_AND_BIOS_URL} in your browser,
+    and save page as complete web page to this directory.
+EOF
+end
+
+task :clobber do
+  cmd = "rm -fr #{PRODUCTS.map{|product| product.inspect}.join(' ')}"
+  system_x(cmd)
+end
+
+Rake::Task[:default].invoke unless (File.basename($0) == 'rake')
