@@ -1,13 +1,12 @@
-html, body { margin:0; padding:0; overflow:hidden }
+html, body { height:100%; width: 100%; overflow:auto; }
 
 .clear { clear: both; }
 
-svg { width:100% }
-#svg_container {
-    overflow: scroll;
-    width: 100%;
-    height: 100%;
-}
+svg { width:100%; }
 
 .seat { cursor: pointer; }
+
+.seat_overlay {
+    position: fixed;
+}
 
