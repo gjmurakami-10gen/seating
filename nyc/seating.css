@@ -1,12 +1,13 @@
 html, body { height:100%; width: 100%; overflow:auto; }
 
-.clear { clear: both; }
+body { position: absolute; }
 
 svg { width:100%; }
 
-.seat { cursor: pointer; }
-
-.seat_overlay {
-    position: fixed;
+#searchbar {
+    float: left;
+    margin-top: 10px;
 }
+
+.seat { cursor: pointer; }
 

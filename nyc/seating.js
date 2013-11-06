@@ -8,7 +8,60 @@ $(document).ready(function () {
     for (var i = 1; i <= NUM_SEATS; i++) {
         highlightOnMouseenter(i);
     }
+
+    // set up search bar
+    initializeSearchBar();
 });
+
+function initializeSearchBar() {
+    $('#searchbar').keyup(function(e){
+        if(e.keyCode == 13){
+            clearMatches();
+            var elmatch = '#searchbar input';
+            var searchText = $(elmatch).val();
+            $(elmatch).val('');
+
+            // if search text is blank, just return
+            if (!searchText) {
+                return;
+            }
+
+            var matches = findMatches(searchText);
+            for (var i = 0; i < matches.length; i++) {
+                showMatch(matches[i]);
+            }
+        }
+    });
+}
+
+function findMatches(searchText) {
+    var matches = [];
+    var t = searchText.toLowerCase();
+    var re = new RegExp(t);
+    for (var i = 1; i <= NUM_SEATS; i++) {
+        if (bySeat[i]) {
+            var person = bySeat[i];
+            var fullName = person.first + " " + person.last;
+            var fullNameLower = fullName.toLowerCase();
+            if (re.test(fullNameLower)) {
+                matches.push(i);
+            }
+        }
+    }
+    return matches;
+}
+
+function clearMatches() {
+    $('.found').attr('fill', 'black');
+    $('.search_overlay').remove();
+}
+
+function showMatch(seatid) {
+    var seat = $('#seat_' + seatid);
+    seat.attr('fill', 'red');
+    seat.attr('class', 'found');
+    makeOverlay(seatid);
+}
 
 function highlightOnSearch(seatid) {
     // get positioning info from the seat number
@@ -29,6 +82,22 @@ function highlightOnSearch(seatid) {
     $('svg').append(circ);
 }
 
+function makeOverlay(seatid) {
+    var seat = $('#seat_' + seatid);
+    var offset = seat.offset();
+
+    var person = bySeat[seatid];
+    if (person) {
+        var overlay = $('<div></div>');
+        overlay.attr('class', 'search_overlay alert alert-success');
+        overlay.css('position', 'absolute');
+        overlay.css('left', offset.left + 30);
+        overlay.css('top', offset.top - 30);
+        overlay.html(person.first + ' ' + person.last);
+        $('body').append(overlay);
+    }
+}
+
 function highlightOnMouseenter(seatid) {
     var seatid_str = '#seat_' + seatid;
 
@@ -37,9 +106,11 @@ function highlightOnMouseenter(seatid) {
         $(seatid_str).attr('fill', 'red');
 
         var person = bySeat[seatid];
-        if (person) {
+        if (person && !$('.overlay_' + seatid).length) {
             var overlay = $('<div></div>');
-            overlay.attr('class', 'seat_overlay alert alert-success');
+            var classes = 'alert alert-success overlay_' + seatid; 
+            overlay.attr('class', classes);
+            overlay.css('position', 'absolute');
             overlay.css('left', e.pageX);
             overlay.css('top', e.pageY);
             overlay.html(person.first + ' ' + person.last);
@@ -50,7 +121,7 @@ function highlightOnMouseenter(seatid) {
     // mouseleave turns it black again
     $(seatid_str).mouseleave(function() {
         $(seatid_str).attr('fill', 'black');
-        $('.seat_overlay').remove();
+        $('.overlay_' + seatid).remove();
     });
 }
 
