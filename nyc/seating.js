@@ -99,18 +99,18 @@ function makeOverlay(seatid) {
 }
 
 function highlightOnMouseenter(seatid) {
-    var seatid_str = '#seat_' + seatid;
+    var seat = $('#seat_' + seatid);
 
     // mouseenter turns number red
-    $(seatid_str).mouseenter(function(e) {
-        $(seatid_str).attr('fill', 'red');
+    seat.mouseenter(function(e) {
+        seat.attr('fill', 'red');
 
         var person = bySeat[seatid];
         if (person && !$('.overlay_' + seatid).length) {
             var overlay = $('<div></div>');
             var classes = 'alert alert-success overlay_' + seatid; 
             overlay.attr('class', classes);
-            overlay.css('position', 'absolute');
+            overlay.css('position', 'fixed');
             overlay.css('left', e.pageX);
             overlay.css('top', e.pageY);
             overlay.html(person.first + ' ' + person.last);
@@ -119,8 +119,8 @@ function highlightOnMouseenter(seatid) {
     });
 
     // mouseleave turns it black again
-    $(seatid_str).mouseleave(function() {
-        $(seatid_str).attr('fill', 'black');
+    seat.mouseleave(function() {
+        seat.attr('fill', 'black');
         $('.overlay_' + seatid).remove();
     });
 }
